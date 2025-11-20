@@ -277,9 +277,9 @@ If you use this pipeline in your research, please cite:
 ```bibtex
 @software{domain_alignment_pipeline,
   title={Domain Alignment Pipeline for Vocational Programs and Job Postings},
-  author={Your Name},
-  year={2024},
-  url={https://github.com/yourusername/nlp-domain-alignment}
+  author={Marco Siliezar},
+  year={2025},
+  url={https://github.com/meatloaf02/nlp-domain-alignment}
 }
 ```
 
