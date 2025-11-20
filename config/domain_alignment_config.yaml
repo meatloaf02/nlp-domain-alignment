@@ -1,0 +1,44 @@
+# Domain Alignment Pipeline Configuration
+
+# Data paths
+data:
+  programs_path: "data/interim/programs_core_final.parquet"
+  jobs_path: "data/interim/jobs_tokenized.parquet"
+  programs_tokenized_path: "data/interim/programs_tokenized.parquet"
+  jobs_tokenized_path: "data/interim/jobs_tokenized.parquet"
+
+# Embedding configuration
+embeddings:
+  # Best config: word 1-2, char 3-5, phrases threshold=7
+  embeddings_path: "artifacts/ngram_experiments/feature_fusion/additive_phrases_threshold_7/features.npy"
+
+# Output configuration
+output:
+  output_dir: "artifacts/unified_evaluation/domain_alignment"
+
+# Analysis parameters
+analysis:
+  top_k: [5, 10]  # Top-K values for analysis
+
+# Data cleaning parameters
+cleaning:
+  use_cleaned_data: true
+  min_word_count: 50  # Minimum words in description
+
+# Visualization parameters
+visualization:
+  figure_dpi: 300
+  figure_size: [12, 8]
+  umap_params:
+    n_neighbors: 15
+    min_dist: 0.1
+    metric: cosine
+
+# Domain categories
+domains:
+  - healthcare
+  - technical
+  - business
+  - it/technology
+  - other
+

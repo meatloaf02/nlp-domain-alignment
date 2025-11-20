@@ -1,0 +1,152 @@
+# N-gram Experiment Configuration
+
+# Data paths
+data:
+  jobs_path: "data/interim/jobs_tokenized.parquet"
+  programs_path: "data/interim/programs_tokenized.parquet"
+  raw_jobs_path: "data/raw/core_programs_adzuna_cleaned.parquet"
+  
+# Experiment settings
+experiment:
+  random_state: 42
+  test_size: 0.2
+  stratify: true
+  text_column: "description_text"
+  
+# Baseline configuration
+baseline:
+  ngram_range: [1, 2]
+  min_df: 2
+  max_features: 10000
+  max_df: 0.95
+  stop_words: "english"
+
+# 1. TF-IDF Word Bigrams/Trigrams experiments
+tfidf_word_ngrams:
+  ngram_ranges:
+    - [1, 2]  # baseline
+    - [2, 2]  # bigrams only
+    - [1, 3]  # unigrams + bigrams + trigrams
+    - [2, 3]  # bigrams + trigrams
+  min_df_values: [2, 5]
+  max_features_values: [20000, 50000]
+  max_df: 0.95
+  stop_words: "english"
+
+# 2. Phrase modeling experiments
+phrase_modeling:
+  # Bigrams
+  bigrams:
+    min_count: 5
+    threshold: 10
+    delimiter: "_"
+  
+  # Trigrams (applied hierarchically after bigrams)
+  trigrams:
+    min_count: 3
+    thresholds: [7, 8, 9, 10]
+    delimiter: "_"
+  
+  # Applications: both TF-IDF and LDA
+  applications: ["tfidf", "lda"]
+  
+  # LDA parameters for phrase experiments
+  lda:
+    k_values: [10, 15, 20]
+    passes: 10
+    iterations: 400
+    random_state: 42
+    alpha: "auto"
+    eta: "auto"
+
+# 3. Character n-grams experiments
+char_ngrams:
+  ngram_ranges:
+    - [3, 3]
+    - [4, 4]
+    - [5, 5]
+    - [3, 4]
+    - [3, 5]
+    - [4, 5]
+  min_df_values: [2, 5]
+  max_features_values: [20000, 50000]
+  max_df: 0.95
+  combinations: ["char_only", "word_char_combined"]
+  
+  # Word n-grams to combine with char n-grams
+  word_ngrams_for_combination:
+    ngram_range: [1, 2]
+    min_df: 2
+    max_features: 20000
+
+# 4. Feature Fusion experiments (word + char n-grams with phrase modeling)
+feature_fusion:
+  # Fusion strategies to test
+  fusion_strategies: ["additive", "weighted"]
+  
+  # Word n-gram configuration
+  word_ngrams:
+    ngram_range: [1, 2]
+    max_features: 20000
+    min_df: 2
+  
+  # Character n-gram configuration
+  char_ngrams:
+    ngram_range: [3, 5]
+    max_features: 20000
+    min_df: 2
+  
+  # Weighted fusion parameters
+  weighted_fusion:
+    word_weight: 0.6
+    char_weight: 0.4
+  
+  # Phrase modeling configuration
+  phrase_modeling:
+    min_count: 5
+    thresholds: [5, 7, 10, 15]  # Grid search thresholds
+  
+  # Normalize features before fusion
+  normalize: true
+
+# Evaluation metrics
+evaluation:
+  retrieval:
+    k: 5  # P@5
+    metrics: ["precision_at_k", "mean_reciprocal_rank"]
+  
+  classification:
+    classifier: "sklearn_baseline"
+    metric: "f1_weighted"
+    models: ["logistic_regression", "random_forest", "svm"]
+    cv_folds: 5
+  
+  lda:
+    coherence_metric: "c_v"
+  
+  clustering:
+    algorithm: "kmeans"
+    k_values: [5, 8, 10, 12, 15, 20]
+    metric: "silhouette_score"
+    random_state: 42
+
+# Output configuration
+output:
+  base_dir: "artifacts/ngram_experiments"
+  create_subdirs: true
+  save_features: true
+  save_vectorizers: true
+  save_models: false  # Set to true if you want to save classification models
+  
+  # File naming patterns
+  files:
+    baseline_metrics: "baseline/metrics.json"
+    summary_csv: "experiment_summary.csv"
+    experiment_report: "experiment_report.md"
+    
+# Logging
+logging:
+  level: "INFO"
+  log_file: "ngram_experiments.log"
+  console_output: true
+
